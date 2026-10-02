@@ -2,9 +2,22 @@
 So far, only for conversion of Affirmative sentences from Simple Present to Simple Past Tense.
 Structure: Subject (article + noun only) + verb (v1) + object + rest of sentence."""
 import csv
+import sys
+import os
 
 # Subject + verb(v1) + object. --Present Affirmative Sentences
 # Subject + verb(v2) + object --Past Affirmative Sentences
+
+def resource_path(relative_path):
+    """
+    Get absolute path to resource, works for dev and for PyInstaller.
+    """
+
+    try:
+        base_path = sys._MEIPASS
+    except AttributeError:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
 
 def get_base_form(verb):
     """Reverse third-person-singular present tense formation to recover the base verb."""
@@ -26,7 +39,7 @@ def get_base_form(verb):
         return verb[:-1]
     return verb 
 
-with open("irregular_verbs_list.csv", "r", newline="") as f:
+with open(resource_path("irregular_verbs_list.csv"), "r", newline="") as f:
     reader = csv.reader(f, skipinitialspace=True)
     rows = [[field.strip() for field in row] for row in reader]
 
