@@ -5,7 +5,6 @@ import csv
 
 # Subject + verb(v1) + object. --Present Affirmative Sentences
 # Subject + verb(v2) + object --Past Affirmative Sentences
-subject_is_plural = False
 
 def get_base_form(verb):
     """Reverse third-person-singular present tense formation to recover the base verb."""
@@ -16,8 +15,10 @@ def get_base_form(verb):
         return "do"
     if verb == "goes":
         return "go"
-    if verb in ("is", "am", "are"):
+    if verb in ("is", "am"):
         return "is"
+    if verb == "are":
+        return 'are'
     if verb.endswith(("sses", "shes", "ches", "xes", "zes", "oes")):
         return verb[:-2]    # washes -> wash
     if verb.endswith("ies") and len(verb) > 3:
@@ -30,6 +31,26 @@ with open("irregular_verbs_list.csv", "r", newline="") as f:
     reader = csv.reader(f, skipinitialspace=True)
     rows = [[field.strip() for field in row] for row in reader]
 
+def is_plural_subject(subject_str):
+    """Check if the subject is plural without misclassifying singular s-ending words."""
+    subject_str = subject_str.lower().strip()
+    
+    if subject_str in ("they", "we", "you"):
+        return True
+        
+    words = subject_str.split()
+    noun = words[-1] #Target the noun 
+    
+    # known irregular plurals
+    if noun in ("children", "people", "men", "women", "mice", "feet", "teeth"):
+        return True
+        
+    # singular subjects ending in 's' / 'ss'
+    if noun.endswith(("ss", "us", "is")):
+        return False
+        
+    return noun.endswith("s")
+
 irregular_verbs_past = {row[0]: row[1] for row in rows}
 irregular_verbs_past_participle = {row[0]: row[2] for row in rows}
 
@@ -39,10 +60,10 @@ print(__doc__)
 def program(user_input, tense="past"):
     input = user_input
     sentence = input.split(" ")
-    sentence[0] = sentence[0] + " " + sentence[1] if sentence[0].lower() == "the" or sentence[0].lower() == "a" else sentence[0]
-    
-    if len(" ".join(sentence)) != len(input):
-        del sentence[1]
+
+    if sentence[0].lower() in ("the", "a", "an") and len(sentence) > 1:
+        sentence[0] = sentence[0] + " " + sentence[1]
+        sentence.pop(1)
     
     # sentence = list(map(lambda x: x.lower(), sentence))
     # sentence = [string.lower() for string in sentence]
@@ -66,10 +87,6 @@ def program(user_input, tense="past"):
     if not sentence[len(sentence)-1].endswith("."):
         sentence[len(sentence)-1] = sentence[len(sentence)-1] + "."
 
-    if sentence[0].lower() in ("the", "a", "an"):
-        sentence[0] = sentence[0] + " " + sentence[1]
-        sentence.pop(1)
-
     # Verb transformation
     verb = sentence[1].strip(",.?!")
     base = get_base_form(verb)
@@ -84,7 +101,7 @@ def program(user_input, tense="past"):
         else:
             converted_form = base + "ed"
 
-    if converted_form =="was" and sentence[0].lower() in ("they", "we", "you"):
+    if converted_form =="was" and is_plural_subject(sentence[0]):
         converted_form = "were"
 
     sentence[1] = converted_form
