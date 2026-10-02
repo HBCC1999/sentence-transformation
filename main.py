@@ -1,6 +1,8 @@
 """Tense Transformation — English
-So far, only for conversion of Affirmative sentences from Simple Present to Simple Past Tense.
-Structure: Subject (article + noun only) + verb (v1) + object + rest of sentence."""
+So far, only for conversion of Affirmative sentences their present tense to past or future ones.
+Structure: Subject (article + noun only) + verb (v1) + object + rest of sentence.
+NOTE: Only affirmative sentences are supported. 100% accuracy is not guaranteed. The program is still in development, more features will be added soon. Avoid using compound subjects.
+Tense options: past or future"""
 import csv
 import sys
 import os
