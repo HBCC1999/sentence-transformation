@@ -5,9 +5,11 @@ import csv
 
 # Subject + verb(v1) + object. --Present Affirmative Sentences
 # Subject + verb(v2) + object --Past Affirmative Sentences
+subject_is_plural = False
 
 def get_base_form(verb):
     """Reverse third-person-singular present tense formation to recover the base verb."""
+    global subject_is_plural
     if verb == "has":
         return "have"
     if verb == "does":
@@ -82,13 +84,17 @@ def program(user_input, tense="past"):
         else:
             converted_form = base + "ed"
 
+    if converted_form =="was" and sentence[0].lower() in ("they", "we", "you"):
+        converted_form = "were"
+
     sentence[1] = converted_form
 
     transformed_sentence = " ".join(sentence)+"." if not sentence[-1].endswith(".") else " ".join(sentence)
+    transformed_sentence = transformed_sentence.capitalize()
     return transformed_sentence
 
 
 if __name__ == "__main__":
     transformed_sentence = program(input("Enter a sentence:\n"))
-    print("Enter a sentence:\n"+transformed_sentence)
+    print(transformed_sentence)
 
