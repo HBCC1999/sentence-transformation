@@ -8,7 +8,6 @@ import csv
 
 def get_base_form(verb):
     """Reverse third-person-singular present tense formation to recover the base verb."""
-    global subject_is_plural
     if verb == "has":
         return "have"
     if verb == "does":
@@ -64,25 +63,21 @@ def program(user_input, tense="past"):
     if sentence[0].lower() in ("the", "a", "an") and len(sentence) > 1:
         sentence[0] = sentence[0] + " " + sentence[1]
         sentence.pop(1)
-    
-    # sentence = list(map(lambda x: x.lower(), sentence))
-    # sentence = [string.lower() for string in sentence]
 
-    # with open("prepositions.txt", "r") as f:
-    #     prepositions = f.read().splitlines()
-    # for i in prepositions:
-    #     if sentence[1] == i:
-    #         sentence[1]
 
-    for i, j in enumerate(sentence):
-        if j == "today":
-            sentence[i] = 'that day'
-        elif j == "now":
-            sentence[i] = 'then'
-        elif j=="tomorrow":
-            sentence[i] = 'the next day'
-        elif j=="yesterday":
-            sentence[i] = 'the day before'
+    # Improved system for time adverbials.
+    for i, token in enumerate(sentence):
+        clean_word = token.rstrip(",.?!")
+        punctuation = token[len(clean_word):]
+        
+        if clean_word == "today":
+            sentence[i] = "that day" + punctuation
+        elif clean_word == "now":
+            sentence[i] = "then" + punctuation
+        elif clean_word == "tomorrow":
+            sentence[i] = "the next day" + punctuation
+        elif clean_word == "yesterday":
+            sentence[i] = "the day before" + punctuation
 
     if not sentence[len(sentence)-1].endswith("."):
         sentence[len(sentence)-1] = sentence[len(sentence)-1] + "."
