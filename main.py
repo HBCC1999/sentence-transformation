@@ -14,7 +14,7 @@ def get_base_form(verb):
         return "do"
     if verb == "goes":
         return "go"
-    if verb == "is":
+    if verb in ("is", "am", "are"):
         return "is"
     if verb.endswith(("sses", "shes", "ches", "xes", "zes", "oes")):
         return verb[:-2]    # washes -> wash
@@ -38,7 +38,7 @@ def program(user_input, tense="past"):
     input = user_input
     sentence = input.split(" ")
     sentence[0] = sentence[0] + " " + sentence[1] if sentence[0].lower() == "the" or sentence[0].lower() == "a" else sentence[0]
-
+    
     if len(" ".join(sentence)) != len(input):
         del sentence[1]
     
@@ -64,8 +64,12 @@ def program(user_input, tense="past"):
     if not sentence[len(sentence)-1].endswith("."):
         sentence[len(sentence)-1] = sentence[len(sentence)-1] + "."
 
+    if sentence[0].lower() in ("the", "a", "an"):
+        sentence[0] = sentence[0] + " " + sentence[1]
+        sentence.pop(1)
+
     # Verb transformation
-    verb = sentence[1]
+    verb = sentence[1].strip(",.?!")
     base = get_base_form(verb)
 
     if base in irregular_verbs_past:
@@ -80,7 +84,7 @@ def program(user_input, tense="past"):
 
     sentence[1] = converted_form
 
-    transformed_sentence = " ".join(sentence)
+    transformed_sentence = " ".join(sentence)+"." if not sentence[-1].endswith(".") else " ".join(sentence)
     return transformed_sentence
 
 
